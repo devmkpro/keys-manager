@@ -76,16 +76,6 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Get propertys associated with the user.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function propertys()
-    {
-        return $this->hasMany(Property::class, 'user_id', 'id');
-    }
-
-    /**
      * Generate a random code for the user.
      *
      * @return string

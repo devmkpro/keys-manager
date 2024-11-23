@@ -59,13 +59,8 @@ class CredentialResource extends Resource
                     ->placeholder(__('example.com'))
                     ->url()
                     ->label(__('Site URL'))
-                    ->default('https://')
-                    ->required()
-                    ->afterStateHydrated(function ($state, callable $set) {
-                        if (!str_starts_with($state, 'https://')) {
-                            $set('site_url', 'https://' . ltrim($state, 'https://'));
-                        }
-                    }),
+                    ->required(),
+                   
             ]);
     }
 

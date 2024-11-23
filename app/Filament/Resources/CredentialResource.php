@@ -43,17 +43,16 @@ class CredentialResource extends Resource
                     ->label(__('Username or Email'))
                     ->placeholder(__('Insert your username or email'))
                     ->required(),
-
-                Password::make('encrypted_password')
-                    ->placeholder(__('Insert your password'))
-                    ->label(__('Password'))
-                    ->copyable(color: 'success')
-                    ->copyMessage(__('Password copied to clipboard'))
-                    ->afterStateHydrated(function ($state, callable $set) {
-                        if ($state) {
-                            $set('encrypted_password', Crypt::decryptString($state));
-                        }
-                    }),
+                    Password::make('encrypted_password')
+                        ->placeholder(__('Insert your password'))
+                        ->label(__('Password'))
+                        ->copyable(fn($state) => !is_null($state), color: 'success')
+                        ->copyMessage(__('Password copied to clipboard'))
+                        ->afterStateHydrated(function ($state, callable $set) {
+                            if ($state) {
+                                $set('encrypted_password', Crypt::decryptString($state));
+                            }
+                        }),
 
                 Forms\Components\TextInput::make('site_url')
                     ->placeholder(__('example.com'))

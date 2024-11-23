@@ -6,6 +6,7 @@ use App\Filament\Resources\CredentialResource\Pages;
 use App\Models\Credential;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -35,7 +36,6 @@ class CredentialResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('service_name')
-
                     ->label(__('Service Name'))
                     ->placeholder(__('AWS, DigitalOcean, etc.')),
 
@@ -50,7 +50,9 @@ class CredentialResource extends Resource
                     ->copyable(color: 'success')
                     ->copyMessage(__('Password copied to clipboard'))
                     ->afterStateHydrated(function ($state, callable $set) {
-                        $set('encrypted_password', Crypt::decryptString($state));
+                        if ($state) {
+                            $set('encrypted_password', Crypt::decryptString($state));
+                        }
                     }),
 
                 Forms\Components\TextInput::make('site_url')
@@ -58,14 +60,12 @@ class CredentialResource extends Resource
                     ->url()
                     ->label(__('Site URL'))
                     ->default('https://')
+                    ->required()
                     ->afterStateHydrated(function ($state, callable $set) {
                         if (!str_starts_with($state, 'https://')) {
                             $set('site_url', 'https://' . ltrim($state, 'https://'));
                         }
                     }),
-
-                Forms\Components\Hidden::make('user_id')
-                    ->default(auth()->id()),
             ]);
     }
 
@@ -109,7 +109,20 @@ class CredentialResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->action(function ($record, $data) {
+                        $record->update([
+                            'service_name' => $data['service_name'],
+                            'username' => $data['username'],
+                            'encrypted_password' => Crypt::encryptString($data['encrypted_password']),
+                            'site_url' => $data['site_url'],
+                        ]);
+
+                        Notification::make()
+                            ->success()
+                            ->title(__('Credential updated'))
+                            ->send();
+                    }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

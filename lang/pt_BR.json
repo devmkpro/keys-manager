@@ -176,5 +176,7 @@
   "Credential created" : "Credencial criada",
   "Username and site URL already exists" : "Nome de usuário e URL do site já existem",
   "Username" : "Nome de Usuário",
-  "Not Informed" : "Não Informado"
+  "Not Informed" : "Não Informado",
+  "Credential updated" : "Credencial atualizada",
+  "Credential already exists" : "Credencial já existe"
 }

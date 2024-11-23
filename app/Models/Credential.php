@@ -20,6 +20,15 @@ class Credential extends Model
         'site_url',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->user_id = auth()->id();
+        });
+    }
+
     /**
      * Acessor para obter a senha descriptografada.
      *
